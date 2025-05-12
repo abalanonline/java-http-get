@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.io.UncheckedIOException;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -79,13 +80,24 @@ class HttpGetTest {
   @Test
   void test404() {
     String url = "https://echo.opera.com/404";
-    HttpGet http = new HttpGet();
     UncheckedIOException e8 = assertThrows(UncheckedIOException.class, () -> http.getUrlConnection(url));
     assertEquals(FileNotFoundException.class, e8.getCause().getClass());
     assertEquals(url, e8.getCause().getMessage());
     UncheckedIOException e11 = assertThrows(UncheckedIOException.class, () -> http.getHttpClient(url));
     assertEquals(FileNotFoundException.class, e11.getCause().getClass());
     assertEquals(url, e11.getCause().getMessage());
+  }
+
+  @Disabled
+  @Test
+  void test301() {
+    Predicate<String> htmlTest = s -> s.contains("<html");
+    String urlHttps = "https://httpstat.us/301";
+    assertTrue(htmlTest.test(http.getUrlConnection(urlHttps)));
+    assertTrue(htmlTest.test(http.getHttpClient(urlHttps)));
+    String urlHttp = "http://httpstat.us/301";
+    assertFalse(htmlTest.test(http.getUrlConnection(urlHttp))); // http->https
+    assertTrue(htmlTest.test(http.getHttpClient(urlHttp)));
   }
 
 }

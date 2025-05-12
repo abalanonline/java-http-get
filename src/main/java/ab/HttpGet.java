@@ -35,10 +35,20 @@ public class HttpGet {
   public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36";
 
+  /**
+   * java.net.http.HttpClient
+   * Content-Length: 0 - JDK bug https://bugs.openjdk.org/browse/JDK-8283544
+   * Host: always
+   * Accept: if provided
+   * User-Agent: Java-http-client/11.0.26
+   * follows redirects if configured
+   * @since 11
+   */
   public String getHttpClient(String url) {
     try {
       HttpClient client = HttpClient.newBuilder()
           .version(HttpClient.Version.HTTP_1_1)
+          .followRedirects(HttpClient.Redirect.NORMAL)
           .build();
       HttpRequest request = HttpRequest.newBuilder(URI.create(url))
           .header("User-Agent", USER_AGENT)
@@ -61,6 +71,15 @@ public class HttpGet {
     }
   }
 
+  /**
+   * java.net.URLConnection
+   * User-Agent: Java/11.0.26
+   * Host: always
+   * Accept: text/html, image/gif, image/jpeg, * /*; q=0.2 - always, can be changed
+   * Connection: keep-alive - always, can be changed to "close"
+   * follows redirects http->http and https->https
+   * @since 1.0
+   */
   public String getUrlConnection(String url) {
     try {
       URLConnection urlConnection = new URL(url).openConnection();
