@@ -63,29 +63,22 @@ class HttpGetTest {
   @Disabled
   @Test
   void test200() {
-    String url;
-    String s8;
-    String s11;
-    url = "http://echo.opera.com/";
-    s8 = removeTimestamp(http.getUrlConnection(url));
-    s11 = removeTimestamp(http.getHttpClient(url));
-    assertEquals(s8, s11);
-    url = "https://echo.opera.com/";
-    s8 = removeTimestamp(http.getUrlConnection(url));
-    s11 = removeTimestamp(http.getHttpClient(url));
-    assertEquals(s8, s11);
+    String urlHttp = "http://echo.opera.com/";
+    assertEquals(removeTimestamp(http.getUrlConnection(urlHttp)), removeTimestamp(http.getHttpClient(urlHttp)));
+    String urlHttps = "https://echo.opera.com/";
+    assertEquals(removeTimestamp(http.getUrlConnection(urlHttps)), removeTimestamp(http.getHttpClient(urlHttps)));
   }
 
   @Disabled
   @Test
   void test404() {
     String url = "https://echo.opera.com/404";
-    UncheckedIOException e8 = assertThrows(UncheckedIOException.class, () -> http.getUrlConnection(url));
-    assertEquals(FileNotFoundException.class, e8.getCause().getClass());
-    assertEquals(url, e8.getCause().getMessage());
-    UncheckedIOException e11 = assertThrows(UncheckedIOException.class, () -> http.getHttpClient(url));
-    assertEquals(FileNotFoundException.class, e11.getCause().getClass());
-    assertEquals(url, e11.getCause().getMessage());
+    UncheckedIOException euc = assertThrows(UncheckedIOException.class, () -> http.getUrlConnection(url));
+    assertEquals(FileNotFoundException.class, euc.getCause().getClass());
+    assertEquals(url, euc.getCause().getMessage());
+    UncheckedIOException ehc = assertThrows(UncheckedIOException.class, () -> http.getHttpClient(url));
+    assertEquals(FileNotFoundException.class, ehc.getCause().getClass());
+    assertEquals(url, ehc.getCause().getMessage());
   }
 
   @Disabled

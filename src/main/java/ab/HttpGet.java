@@ -63,6 +63,7 @@ public class HttpGet {
           throw new java.io.IOException("Server returned HTTP response code: " + statusCode + " for URL: " + url);
         }
       }
+      if (statusCode != 200) throw new IllegalStateException();
       return response.body();
     } catch (IOException e) {
       throw new UncheckedIOException(e);
@@ -84,8 +85,10 @@ public class HttpGet {
     try {
       URLConnection urlConnection = new URL(url).openConnection();
       urlConnection.setRequestProperty("User-Agent", USER_AGENT);
-      InputStream inputStream = urlConnection.getInputStream();
-      return new Scanner(inputStream).useDelimiter("\\Z").next();
+      try (InputStream inputStream = urlConnection.getInputStream();
+          Scanner scanner = new Scanner(inputStream).useDelimiter("\\Z")) {
+        return scanner.next();
+      }
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
